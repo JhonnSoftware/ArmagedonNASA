@@ -11,7 +11,7 @@ Route::get('/', function () {
 Route::get('/visor3d', function () {
     return view('visor3d', [
         // PON AQUÍ literal la URL que SÍ te descarga el archivo en el navegador:
-        'src' => 'http://localhost/ArmagedonNASA/public/storage/models/modelo.glb',
+        'src' => 'http://localhost/ArmagedonNASA/public/storage/models/modelo2.glb',
     ]);
 });
 

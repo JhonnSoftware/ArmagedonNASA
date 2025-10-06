@@ -24,9 +24,7 @@
     <link rel="stylesheet" href="{{ url('assets/css/style-preset.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 
-    {{-- model-viewer --}}
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-
+  
     {{-- ====== Armagedon Dark Layer (override) ====== --}}
     <style>
         :root {
@@ -213,8 +211,15 @@
         }
 
         @keyframes kpi-in {
-            from { transform: translateY(-6px); opacity: 0; }
-            to   { transform: translateY(0);    opacity: 1; }
+            from {
+                transform: translateY(-6px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         .kpi-head {
@@ -260,7 +265,10 @@
             padding: 6px;
         }
 
-        .kpi-close:hover { background: var(--arm-hover); color: var(--arm-text); }
+        .kpi-close:hover {
+            background: var(--arm-hover);
+            color: var(--arm-text);
+        }
 
         .kpi-body {
             padding: 12px 14px 14px;
@@ -287,7 +295,8 @@
         .kpi-ico {
             display: grid;
             place-items: center;
-            width: 42px; height: 42px;
+            width: 42px;
+            height: 42px;
             border-radius: 10px;
             background: var(--arm-accent-soft);
             color: var(--arm-accent);
@@ -335,7 +344,8 @@
         /* Re-open FAB */
         .kpi-fab {
             position: absolute;
-            bottom: 20px; right: 20px;
+            bottom: 20px;
+            right: 20px;
             z-index: 20;
             display: none;
         }
@@ -347,23 +357,85 @@
             padding: 10px 12px;
             border-radius: 12px;
             font-weight: 800;
-            display: flex; align-items: center; gap: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             box-shadow: var(--arm-shadow);
         }
 
-        .kpi-fab button:hover { background: #162035; }
+        .kpi-fab button:hover {
+            background: #162035;
+        }
 
         /* Responsive */
         @media (max-width: 1024px) {
-            .kpi-panel { width: 320px; }
+            .kpi-panel {
+                width: 320px;
+            }
         }
+
         @media (max-width: 640px) {
             .kpi-panel {
                 position: static;
                 width: 100%;
                 margin: 8px 18px 0;
             }
-            .kpi-fab { position: fixed; }
+
+            .kpi-fab {
+                position: fixed;
+            }
+        }
+
+        /* ===== Intro Overlay ===== */
+        .intro-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            display: grid;
+            place-items: center;
+            z-index: 9999;
+            transition: opacity 0.4s ease;
+        }
+
+        .intro-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .intro-skip {
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            padding: 10px 16px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, .1);
+            border: 1px solid rgba(255, 255, 255, .25);
+            color: #fff;
+            font-weight: 700;
+            backdrop-filter: blur(6px);
+            cursor: pointer;
+        }
+
+        .intro-skip:hover {
+            background: rgba(255, 255, 255, .2);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .intro-overlay {
+                display: none !important;
+            }
+        }
+
+        /* ====== VISOR VIDEO ====== */
+        .scene-video {
+            width: 100%;
+            max-width: 1400px;
+            height: 85vh;
+            border-radius: 12px;
+            background: #111827;
+            box-shadow: 0 0 20px rgba(0, 0, 0, .4);
+            object-fit: cover;
         }
     </style>
 
@@ -371,6 +443,22 @@
 </head>
 
 <body data-pc-preset="preset-1" data-pc-direction="ltr" data-pc-theme="dark">
+
+    <!-- ===== Intro Overlay (Video antes del Dashboard) ===== -->
+    <div id="introOverlay" class="intro-overlay" aria-hidden="true">
+        <video id="introVideo" class="intro-video" preload="auto" muted playsinline webkit-playsinline
+            disablepictureinpicture controlslist="nodownload noplaybackrate"
+            poster="{{ url('assets/images/logo_armagedon.jpeg') }}">
+            <source src="{{ url('assets/video/explosion.mp4') }}" type="video/mp4">
+            Tu navegador no soporta la reproducción de videos en HTML5.
+        </video>
+
+        <button id="introSkip" class="intro-skip" aria-label="Saltar introducción">
+            Saltar
+        </button>
+    </div>
+
+
     <div class="loader-bg">
         <div class="loader-track">
             <div class="loader-fill"></div>
@@ -456,14 +544,15 @@
                     </li>
                     <li class="dropdown pc-h-item d-inline-flex d-md-none">
                         <a class="pc-head-link dropdown-toggle arrow-none m-0" data-bs-toggle="dropdown"
-                           href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                            href="#" role="button" aria-haspopup="false" aria-expanded="false">
                             <i class="ti ti-search"></i>
                         </a>
                         <div class="dropdown-menu pc-h-dropdown drp-search">
                             <form class="px-3">
                                 <div class="form-group mb-0 d-flex align-items-center">
                                     <i data-feather="search"></i>
-                                    <input type="search" class="form-control border-0 shadow-none" placeholder="Buscar…">
+                                    <input type="search" class="form-control border-0 shadow-none"
+                                        placeholder="Buscar…">
                                 </div>
                             </form>
                         </div>
@@ -480,19 +569,21 @@
             <div class="ms-auto">
                 <ul class="list-unstyled">
                     <li class="pc-h-item">
-                        <button id="themeToggle" class="pc-head-link bg-transparent border-0" title="Cambiar tema" aria-label="Cambiar tema">
+                        <button id="themeToggle" class="pc-head-link bg-transparent border-0" title="Cambiar tema"
+                            aria-label="Cambiar tema">
                             <i class="ti ti-moon" id="themeIcon"></i>
                         </button>
                     </li>
                     <li class="dropdown pc-h-item">
                         <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown"
-                           href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                            href="#" role="button" aria-haspopup="false" aria-expanded="false">
                             <i class="ti ti-mail"></i>
                         </a>
                     </li>
                     <li class="dropdown pc-h-item header-user-profile">
                         <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown"
-                           href="#" role="button" aria-haspopup="false" data-bs-auto-close="outside" aria-expanded="false">
+                            href="#" role="button" aria-haspopup="false" data-bs-auto-close="outside"
+                            aria-expanded="false">
                             <i class="ti ti-user" style="font-size:18px; margin-right:6px;"></i>
                             <span><b>Usuario</b></span>
                         </a>
@@ -502,8 +593,9 @@
                                 <div class="d-flex mb-1 align-items-center">
                                     <div class="flex-shrink-0">
                                         <div class="user-avtar wid-35 d-flex align-items-center justify-content-center rounded-circle"
-                                             style="background:#0f172a;border:1px solid var(--arm-border);">
-                                            <i class="ti ti-user" style="font-size:20px; color:var(--arm-text-2);"></i>
+                                            style="background:#0f172a;border:1px solid var(--arm-border);">
+                                            <i class="ti ti-user"
+                                                style="font-size:20px; color:var(--arm-text-2);"></i>
                                         </div>
                                     </div>
                                     <div class="flex-grow-1 ms-3">
@@ -511,7 +603,8 @@
                                     </div>
                                     <form method="POST" action="" class="ms-auto">
                                         @csrf
-                                        <button type="submit" class="pc-head-link bg-transparent border-0 p-0" title="Salir">
+                                        <button type="submit" class="pc-head-link bg-transparent border-0 p-0"
+                                            title="Salir">
                                             <i class="ti ti-power" style="color:#ef4444;"></i>
                                         </button>
                                     </form>
@@ -520,17 +613,27 @@
 
                             <ul class="nav drp-tabs nav-fill nav-tabs" id="mydrpTab" role="tablist"></ul>
                             <div class="tab-content" id="mysrpTabContent">
-                                <div class="tab-pane fade show active" id="drp-tab-1" role="tabpanel" aria-labelledby="drp-t1" tabindex="0">
-                                    <a href="#!" class="dropdown-item"><i class="ti ti-edit-circle"></i><span>Editar perfil</span></a>
-                                    <a href="#!" class="dropdown-item"><i class="ti ti-user"></i><span>Ver perfil</span></a>
-                                    <a href="#!" class="dropdown-item"><i class="ti ti-clipboard-list"></i><span>Datos personales</span></a>
-                                    <a href="#!" class="dropdown-item"><i class="ti ti-wallet"></i><span>Facturación</span></a>
+                                <div class="tab-pane fade show active" id="drp-tab-1" role="tabpanel"
+                                    aria-labelledby="drp-t1" tabindex="0">
+                                    <a href="#!" class="dropdown-item"><i
+                                            class="ti ti-edit-circle"></i><span>Editar perfil</span></a>
+                                    <a href="#!" class="dropdown-item"><i class="ti ti-user"></i><span>Ver
+                                            perfil</span></a>
+                                    <a href="#!" class="dropdown-item"><i
+                                            class="ti ti-clipboard-list"></i><span>Datos personales</span></a>
+                                    <a href="#!" class="dropdown-item"><i
+                                            class="ti ti-wallet"></i><span>Facturación</span></a>
                                 </div>
-                                <div class="tab-pane fade" id="drp-tab-2" role="tabpanel" aria-labelledby="drp-t2" tabindex="0">
-                                    <a href="#!" class="dropdown-item"><i class="ti ti-help"></i><span>Soporte</span></a>
-                                    <a href="#!" class="dropdown-item"><i class="ti ti-lock"></i><span>Centro de privacidad</span></a>
-                                    <a href="#!" class="dropdown-item"><i class="ti ti-messages"></i><span>Comentarios</span></a>
-                                    <a href="#!" class="dropdown-item"><i class="ti ti-list"></i><span>Historial</span></a>
+                                <div class="tab-pane fade" id="drp-tab-2" role="tabpanel" aria-labelledby="drp-t2"
+                                    tabindex="0">
+                                    <a href="#!" class="dropdown-item"><i
+                                            class="ti ti-help"></i><span>Soporte</span></a>
+                                    <a href="#!" class="dropdown-item"><i class="ti ti-lock"></i><span>Centro de
+                                            privacidad</span></a>
+                                    <a href="#!" class="dropdown-item"><i
+                                            class="ti ti-messages"></i><span>Comentarios</span></a>
+                                    <a href="#!" class="dropdown-item"><i
+                                            class="ti ti-list"></i><span>Historial</span></a>
                                 </div>
                             </div>
                         </div>
@@ -542,28 +645,29 @@
     </header>
 
     @php
-        // Fuente del modelo 3D
-        $src = request('src');
+        // Fuente del VIDEO
+        $src = request('src'); // permite URL absoluta (CDN/S3)
         if (!$src) {
-            $file = trim(request('file', 'modelo.glb'), '/');
-            $src = url('storage/models/' . $file);
+            // default al archivo real que tienes
+            $file = trim(request('video', 'crater.mp4'), '/');
+            // carpeta SINGULAR "video"
+            $src = url('storage/video/' . $file);
         }
 
-        // KPIs con overrides por querystring
-        $kpiEnergy   = floatval(request('energy', 2100));   // MT TNT
-        $kpiDistance = floatval(request('distance', 32000)); // km (sobrevuelo 2029)
-        $kpiSpeed    = floatval(request('speed', 17));      // km/s (impacto típico)
-        $kpiProb     = floatval(request('prob', 0.0));      // %
+        // KPIs (igual que antes)
+        $kpiEnergy = floatval(request('energy', 2100));
+        $kpiDistance = floatval(request('distance', 32000));
+        $kpiSpeed = floatval(request('speed', 17));
+        $kpiProb = floatval(request('prob', 0.0));
     @endphp
+
+
 
     {{-- CONTENIDO --}}
     <div class="pc-container">
-        <div class="pc-content" id="sceneRoot"
-             data-energy="{{ $kpiEnergy }}"
-             data-distance="{{ $kpiDistance }}"
-             data-speed="{{ $kpiSpeed }}"
-             data-prob="{{ $kpiProb }}">
-            
+        <div class="pc-content" id="sceneRoot" data-energy="{{ $kpiEnergy }}"
+            data-distance="{{ $kpiDistance }}" data-speed="{{ $kpiSpeed }}" data-prob="{{ $kpiProb }}">
+
             {{-- PANEL KPI (derecha, sobre el visor) --}}
             <aside class="kpi-panel" id="kpiPanel" aria-label="Panel de indicadores de misión">
                 <div class="kpi-head">
@@ -612,7 +716,8 @@
 
                     </div>
                     <div class="kpi-foot">
-                        <span class="hint"><i class="ti ti-info-circle"></i> Valores editables vía querystring.</span>
+                        <span class="hint"><i class="ti ti-info-circle"></i> Valores editables vía
+                            querystring.</span>
                         <span class="pill">2029 flyby • 32 000 km</span>
                     </div>
                 </div>
@@ -626,11 +731,13 @@
             </div>
 
             {{-- VISOR 3D --}}
-            <model-viewer id="mv" crossorigin="anonymous" src="{{ $src }}" alt="Modelo 3D"
-                camera-controls auto-rotate shadow-intensity="1" ar ar-modes="webxr scene-viewer quick-look"
-                min-camera-orbit="auto auto 1m" max-camera-orbit="auto auto 100m" min-field-of-view="10deg"
-                max-field-of-view="75deg">
-            </model-viewer>
+            <!-- VISOR VIDEO -->
+            <video id="mv" class="scene-video" muted autoplay loop playsinline controls preload="auto"
+                poster="{{ url('assets/images/logo_armagedon.jpeg') }}">
+                <source src="{{ $src }}" type="video/mp4">
+                Tu navegador no soporta la reproducción de video.
+            </video>
+
         </div>
     </div>
 
@@ -652,7 +759,7 @@
         preset_change("preset-1");
         font_change("Public-Sans");
 
-        (function () {
+        (function() {
             const root = document.documentElement;
             const btn = document.getElementById('themeToggle');
             const icon = document.getElementById('themeIcon');
@@ -660,17 +767,21 @@
 
             function apply(theme) {
                 root.setAttribute('data-theme', theme);
-                try { layout_change(theme); } catch (e) {}
+                try {
+                    layout_change(theme);
+                } catch (e) {}
                 if (theme === 'dark') {
-                    icon.classList.remove('ti-sun'); icon.classList.add('ti-moon');
+                    icon.classList.remove('ti-sun');
+                    icon.classList.add('ti-moon');
                 } else {
-                    icon.classList.remove('ti-moon'); icon.classList.add('ti-sun');
+                    icon.classList.remove('ti-moon');
+                    icon.classList.add('ti-sun');
                 }
                 localStorage.setItem('arm-theme', theme);
             }
             apply(saved === 'light' ? 'light' : 'dark');
 
-            btn?.addEventListener('click', function () {
+            btn?.addEventListener('click', function() {
                 const current = root.getAttribute('data-theme') || 'dark';
                 apply(current === 'dark' ? 'light' : 'dark');
             });
@@ -693,7 +804,11 @@
         const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
         function setRadius(newR) {
-            const { theta, phi, radius } = mv.getCameraOrbit();
+            const {
+                theta,
+                phi,
+                radius
+            } = mv.getCameraOrbit();
             const r = clamp(newR, minRadius, maxRadius);
             mv.cameraOrbit = `${theta}rad ${phi}rad ${r}m`;
         }
@@ -705,29 +820,38 @@
 
         // ====== KPI panel logic
         const sceneRoot = document.getElementById('sceneRoot');
-        const kpiPanel  = document.getElementById('kpiPanel');
-        const kpiFab    = document.getElementById('kpiFab');
-        const kpiClose  = document.getElementById('kpiClose');
-        const kpiOpen   = document.getElementById('kpiOpen');
+        const kpiPanel = document.getElementById('kpiPanel');
+        const kpiFab = document.getElementById('kpiFab');
+        const kpiClose = document.getElementById('kpiClose');
+        const kpiOpen = document.getElementById('kpiOpen');
 
-        const elEnergy   = document.getElementById('kpiEnergy');
+        const elEnergy = document.getElementById('kpiEnergy');
         const elDistance = document.getElementById('kpiDistance');
-        const elSpeed    = document.getElementById('kpiSpeed');
-        const elProb     = document.getElementById('kpiProb');
+        const elSpeed = document.getElementById('kpiSpeed');
+        const elProb = document.getElementById('kpiProb');
 
         // Formateo bonito
-        const nf0 = new Intl.NumberFormat('es-PE', { maximumFractionDigits: 0 });
-        const nf1 = new Intl.NumberFormat('es-PE', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-        const nf2 = new Intl.NumberFormat('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const nf0 = new Intl.NumberFormat('es-PE', {
+            maximumFractionDigits: 0
+        });
+        const nf1 = new Intl.NumberFormat('es-PE', {
+            minimumFractionDigits: 1,
+            maximumFractionDigits: 1
+        });
+        const nf2 = new Intl.NumberFormat('es-PE', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
 
-        const energy   = Number(sceneRoot.dataset.energy || 2100);
+        const energy = Number(sceneRoot.dataset.energy || 2100);
         const distance = Number(sceneRoot.dataset.distance || 32000);
-        const speed    = Number(sceneRoot.dataset.speed || 17);
-        const prob     = Number(sceneRoot.dataset.prob || 0);
+        const speed = Number(sceneRoot.dataset.speed || 17);
+        const prob = Number(sceneRoot.dataset.prob || 0);
 
         // Contadores suaves (sin lib externa)
-        function tweenNumber(el, from, to, ms, fmt = (x)=>x) {
+        function tweenNumber(el, from, to, ms, fmt = (x) => x) {
             const start = performance.now();
+
             function step(t) {
                 const k = Math.min(1, (t - start) / ms);
                 const v = from + (to - from) * (0.5 - Math.cos(Math.PI * k) / 2); // ease
@@ -748,6 +872,7 @@
             kpiPanel.style.display = 'none';
             kpiFab.style.display = 'block';
         }
+
         function openPanel() {
             kpiPanel.style.display = 'block';
             kpiFab.style.display = 'none';
@@ -759,6 +884,61 @@
         // y dejamos el FAB por si el usuario lo oculta.
     </script>
 
+    <script>
+        (function() {
+            const overlay = document.getElementById('introOverlay');
+            const video = document.getElementById('introVideo');
+            const skip = document.getElementById('introSkip');
+
+            const SEEN_KEY = 'arm-seen-intro';
+            const prefersReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            function hideOverlay() {
+                overlay.style.opacity = '0';
+                overlay.style.pointerEvents = 'none';
+                setTimeout(() => overlay.style.display = 'none', 400);
+            }
+
+
+
+            // Reproducir video (autoplay móvil compatible)
+            let started = false;
+
+            function startVideo() {
+                if (started) return;
+                started = true;
+                video.play().catch(() => {
+                    /* el navegador puede bloquear autoplay, el usuario tocará */
+                });
+            }
+
+            video.addEventListener('canplay', startVideo, {
+                once: true
+            });
+
+
+
+            // Botón "Saltar"
+            skip.addEventListener('click', () => {
+                sessionStorage.setItem(SEEN_KEY, '1');
+                try {
+                    video.pause();
+                } catch (e) {}
+                hideOverlay();
+            });
+
+            // Fallback: oculta si el video no termina en 15s
+            setTimeout(() => {
+                if (overlay.style.display !== 'none') {
+                    sessionStorage.setItem(SEEN_KEY, '1');
+                    hideOverlay();
+                }
+            }, 15000);
+        })();
+    </script>
+
+
     @stack('scripts')
 </body>
+
 </html>
